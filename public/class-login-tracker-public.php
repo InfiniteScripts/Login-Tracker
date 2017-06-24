@@ -115,6 +115,9 @@ class Login_Tracker_Public {
 
 		add_menu_page('Login Reports', 'Login Reports', 'manage_options', 'login_tracker_reports', 'login_tracker_report_page_render');
 	}
+		/** 
+		* This function registers the settings to keep the APi key
+		**/
 
 	public function login_tracker_settings_init(  ) { 
 
