@@ -101,9 +101,7 @@ class Login_Tracker_Public {
 
 		/**
 		* This funcion adds the menu item and register the page with Wordpress
-		**/
-
-		add_options_page( 'Login Tracker', 'Login Tracker', 'manage_options', 'login_tracker_settings', 'login_tracker_options_page' );
+		**/	
 
 	}
 
@@ -121,21 +119,6 @@ class Login_Tracker_Public {
 
 	public function login_tracker_settings_init(  ) { 
 
-		register_setting( 'pluginPage', 'login_tracker_settings' );
-
-		add_settings_section(
-			'login_tracker_pluginPage_section', 
-			__( 'API Keys', 'login_tracker' ), 
-			'login_tracker_settings_section_callback', 
-			'pluginPage'
-		);
-
-		add_settings_field( 
-			'login_tracker_ipinfodb_api_key', 
-			__( 'IPinfoDB API key', 'login_tracker' ), 
-			'login_tracker_ipinfodb_api_key_render', 
-			'pluginPage', 
-			'login_tracker_pluginPage_section' 
-		);
+		
 	}
 }

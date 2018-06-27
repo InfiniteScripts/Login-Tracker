@@ -13,37 +13,6 @@
  */
 
 
-function login_tracker_options_page(  ) {
-?>
-	<form action='options.php' method='post'>
-		
-		<h2>Login Tracker Settings</h2>
-		
-		<?php
-			settings_fields( 'pluginPage' );
-			do_settings_sections( 'pluginPage' );
-			submit_button();
-		?>
-		
-	</form>
-	<?php
-}
-
-function login_tracker_ipinfodb_api_key_render(  ) { 
-
-	$options = get_option( 'login_tracker_settings' );
-	?>
-	<input type='text' name='login_tracker_settings[login_tracker_ipinfodb_api_key]' size="128" value='<?php echo $options['login_tracker_ipinfodb_api_key']; ?>'>
-	<?php
-}
-
-
-function login_tracker_settings_section_callback(  ) { 
-
-	echo __( 'IPinfoDB APi key is required for IP location.', 'login_tracker' );
-
-}
-
 
 add_filter('manage_users_columns', 'login_tracker_user_id_column');
 function login_tracker_user_id_column($columns) {
@@ -86,13 +55,10 @@ function login_tracker_user_sortable_columns( $columns ) {
 
 add_action('pre_user_query', 'login_tracker_my_user_query');
 function login_tracker_my_user_query($userquery){
-	if('Last Login'==$userquery->query_vars['orderby']) {
-		
+	if($userquery->query_vars['orderby'] == 'Last Login') {		
 		global $wpdb;
-		
 		$table_name = $wpdb->prefix . 'login_tracker';
-		$userquery->query_from .= " LEFT OUTER JOIN $table_name AS alias ON ($wpdb->users.ID = alias.user_id) ";
-		
+		$userquery->query_from .= " LEFT OUTER JOIN $table_name AS alias ON ($wpdb->users.ID = alias.user_id) ";		
 		$userquery->query_orderby = " ORDER BY alias.login_time ".($userquery->query_vars["order"] == "ASC" ? "asc " : "desc ");//set sort order
 	}
 }
@@ -103,14 +69,14 @@ function login_tracker_report_page_render(){
 	$user_id = $_GET['login_tracker_user_id'];
 	$table_name = $wpdb->prefix . 'login_tracker';
 
-	$header_row = array(
+	/*$header_row = array(
 		0 => 'Display Name',
 		1 => 'Email',
 		2 => 'Institution',
 		3 => 'Registration Date',
-	);
+	); */
 
-	$headers  = array(
+	/*$headers  = array(
 		'Username',
 		'First Name',
 		'Last Name',
@@ -119,26 +85,31 @@ function login_tracker_report_page_render(){
 		'IP',
 		'City',
 		'State',
-	 );
+	 ); */
+
 
 	if($user_id){
 
 		$user_info = get_userdata( $user_id );
 
-      	echo '<h2>User:  ' . $user_info->first_name . ' ' . $user_info->last_name . '</h2>';
-      	echo '<p>Username:  ' . $user_info->user_login . '</p>';
-      	echo '<p>Email:  ' . $user_info->user_email . '</p>';
-      	
-      	
+		if( $user_info->first_name){
+      		echo '<h2>User:  ' . $user_info->first_name . ' ' . $user_info->last_name . '</h2>';
+      	}
+      	echo '<h2>Username:  ' . $user_info->user_login . '</h2>';
+      	echo '<h2>Email:  ' . $user_info->user_email . '</h2>';
       	
 
       	login_tracker_render_table($user_id);
+	} else {
+
+		echo '<p>No user selected. To acccess a user report, check the  <a href="/wp-admin/users.php">Users</a> tab and click their last login time.</p>';  
+
 	}
 }
 
-function login_tracker_render_table($user_id){
+function login_tracker_render_table(){
 	$login_tracker_list_table = new Login_Tracker_Table();
-	$results = $login_tracker_list_table->prepare_items( $user_id);
+	$results = $login_tracker_list_table->prepare_items( );
 	$login_tracker_list_table->display();
 	$login_tracker_list_table->login_tracker_render_csv_export_button($results);
 }

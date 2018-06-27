@@ -54,6 +54,8 @@ class Login_Tracker_Admin {
 
 	}
 
+	private $user_id;
+
 	/**
 	 * Register the stylesheets for the admin area.
 	 *
@@ -106,58 +108,29 @@ class Login_Tracker_Admin {
 
 		global $wpdb;
 
-		// Get Api key from the settings
-		$ip_api_key = get_option('login_tracker_ipinfodb_api_key');
-
-		// Make sure that a key exists, it not exit.
-		if(!$ip_api_key){
-			return;
-		}
-
-		// Assemble Table name with correct prefix for other installs.
+				// Assemble Table name with correct prefix for other installs.
 		$table_name = $wpdb->prefix . 'login_tracker';
 
 		// Get users IP.
         $ip = $_SERVER['REMOTE_ADDR'];
 
-        // Log the user.
-		$login_user_id = $user->ID;
-
 		// Log the time.
-		$login_time =  date("Y-m-d H:i:s", $_SERVER['REQUEST_TIME']);
-		
-		/**
-		* 
-		* IP location has no documentation. After testing I found the array returned is as follows:
-		*
-		* [3] = Country
-		* [5] = State
-		* [6] = City
-		* [7] = Zip
-		* [8] = Lat
-		* [9] = Lng
-		*
-		**/
+		$login_time =  date("Y-m-d H:i:s", $_SERVER['REQUEST_TIME']);			
 
-		$url = 'http://api.ipinfodb.com/v3/ip-city/?key='. $ip_api_key .'&ip=' . $ip;
-
-		// Make the HTTP request.
-		$data = file_get_contents($url); 
-
-		// Break the String into an array for easy reading.
-		$pieces = explode(';', $data);
+		$ip = $_SERVER['REMOTE_ADDR']; 
+		$query = @unserialize(file_get_contents('http://ip-api.com/php/'.$ip));		
 
 		// Assemble data array for easy insertion.
 		$data =  array(
-			'user_id' => $login_user_id,
+			'user_id' => $user->ID,
 			'ip_address' => $ip, 
 			'login_time' => $login_time,
-			'city' => $pieces[6],
-			'state' => $pieces[5],
-			'zip' => $pieces[7],
+			'city' => $query['city'],
+			'state' => $query['regionName'],
+			'zip' => $query['zip'],
 
 		);
-
+		
 		// Store the data in our unique table.
 		$result = $wpdb->insert($table_name, $data);
 	}
@@ -174,12 +147,7 @@ class Login_Tracker_Admin {
 		$data = $_POST['data'];
 		
 		// Set the headers for the csv.
-		/**
-		'Username',
-		'First Name',
-		'Last Name',
-		'Email',
-		**/
+		
 		$headers  = array(
 			'Login Time',
 			'IP',

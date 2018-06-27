@@ -199,8 +199,7 @@ class Login_Tracker{
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'login_tracker_public_enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'login_tracker_public_enqueue_scripts' );
-		$this->loader->add_action( 'admin_menu', $plugin_public, 'login_tracker_reports');
-		$this->loader->add_action( 'admin_menu', $plugin_public, 'login_tracker_add_admin_menu' );
+		$this->loader->add_action( 'admin_menu', $plugin_public, 'login_tracker_reports');		
 		$this->loader->add_action( 'admin_init', $plugin_public, 'login_tracker_settings_init' );
 
 	}
@@ -243,6 +242,11 @@ class Login_Tracker{
 	 */
 	public function get_version() {
 		return $this->version;
+	} 
+
+	public function prepare_items(){
+
+
 	}
 
 }

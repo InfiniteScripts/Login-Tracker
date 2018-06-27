@@ -41,7 +41,7 @@ class Login_Tracker_Table extends WP_List_Table {
         );
     }
 
-    public function prepare_items($user_id) {
+    public function prepare_items() {
 
         /**
         *
@@ -52,7 +52,7 @@ class Login_Tracker_Table extends WP_List_Table {
         global $wpdb, $_wp_column_headers;
         $table_name = $wpdb->prefix . 'login_tracker';
         $screen = get_current_screen();
-
+        $user_id = $_GET['login_tracker_user_id'];
         // Preparing your query.
         $query = "SELECT login_time, ip_address, city, state, zip FROM $table_name WHERE user_id = $user_id";
 
